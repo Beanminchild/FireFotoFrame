@@ -5,7 +5,7 @@
     "https://www.icloud.com/sharedalbum/#B1z53qWtHqA2mdx",
     
     "https://duckduckgo.com/?q=weather+in+plum+pa&atb=v481-1&ia=web",
-    "com.amazon.weather"
+    "//com.amazon.weather"
   ];
   const delayMs = 5000; // 30 seconds
 
