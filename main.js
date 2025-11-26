@@ -5,7 +5,7 @@
     
     "https://duckduckgo.com/?q=weather+in+plum+pa&atb=v481-1&ia=web"
   ];
-  const delayMs = 30000; // 30 seconds
+  const delayMs = 5000; // 30 seconds
 
   function redirectRandom() {
     const choice = urls[Math.floor(Math.random() * urls.length)];
