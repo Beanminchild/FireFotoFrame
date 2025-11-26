@@ -5,7 +5,7 @@
     "https://youtube.com",
     "https://duckduckgo.com"
   ];
-  const delayMs = 30000; // 30 seconds
+  const delayMs = 3000; // 30 seconds
 
   function redirectRandom() {
     const choice = urls[Math.floor(Math.random() * urls.length)];
