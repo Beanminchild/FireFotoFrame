@@ -138,109 +138,90 @@ website that drives End parents Fire Foto Frame
 
 
 
-(function rubberDuckyOnScreenLogger(){
-  // create/replace debug panel
-  const id = '__rubberducky_debug_panel';
-  let panel = document.getElementById(id);
-  if(panel) panel.remove();
-  panel = document.createElement('div');
-  panel.id = id;
-  Object.assign(panel.style, {
-    position: 'fixed',
-    right: '8px',
-    top: '8px',
-    zIndex: 2147483647,
-    width: '320px',
-    maxHeight: '60vh',
-    overflowY: 'auto',
-    background: 'rgba(0,0,0,0.85)',
-    color: '#fff',
-    fontSize: '12px',
-    padding: '8px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.6)',
-    lineHeight: '1.3',
-    fontFamily: 'monospace'
-  });
-  const header = document.createElement('div');
-  header.textContent = 'RubberDucky Debug';
-  header.style.fontWeight = '700';
-  header.style.marginBottom = '6px';
-  const clearBtn = document.createElement('button');
-  clearBtn.textContent = 'Clear';
-  Object.assign(clearBtn.style, { float:'right', fontSize:'11px', marginLeft:'6px' });
-  clearBtn.addEventListener('click', ()=>{ body.innerHTML=''; });
-  header.appendChild(clearBtn);
-  panel.appendChild(header);
-  const body = document.createElement('div');
-  panel.appendChild(body);
-  document.documentElement.appendChild(panel);
+(function rubberDuckyClickCoords(){
+  // CONFIG: set clientX/clientY to specific viewport coordinates (pixels), or leave null to use center
+  const COORDS = { clientX: null, clientY: null }; // e.g. {clientX: 400, clientY: 320}
+  const DURATION_MS = 250; // marker visible time
 
-  // helper log
-  function duckLog(msg){
-    const line = document.createElement('div');
-    line.textContent = (new Date()).toISOString() + ' — ' + String(msg);
-    body.appendChild(line);
-    body.scrollTop = body.scrollHeight;
-    // auto-remove old lines
-    if(body.children.length > 200) body.removeChild(body.children[0]);
-    console.log('RubberDucky:', msg);
+  // compute center if not provided
+  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+  const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+  const clientX = (COORDS.clientX == null) ? Math.round(vw/2) : Math.round(COORDS.clientX);
+  const clientY = (COORDS.clientY == null) ? Math.round(vh/2) : Math.round(COORDS.clientY);
+
+  // create visual marker so you can confirm where it will click
+  const markId = '__rubberducky_click_marker';
+  let m = document.getElementById(markId);
+  if(m) m.remove();
+  m = document.createElement('div');
+  m.id = markId;
+  Object.assign(m.style, {
+    position: 'fixed',
+    left: (clientX - 12) + 'px',
+    top: (clientY - 12) + 'px',
+    width: '24px',
+    height: '24px',
+    borderRadius: '12px',
+    background: 'rgba(255,0,0,0.8)',
+    border: '2px solid #fff',
+    zIndex: 2147483647,
+    pointerEvents: 'none',
+    boxShadow: '0 0 8px rgba(0,0,0,0.6)'
+  });
+  document.documentElement.appendChild(m);
+  setTimeout(()=>{ try{ m.remove(); }catch(e){} }, DURATION_MS);
+
+  // find the topmost element at that viewport coordinate
+  const target = document.elementFromPoint(clientX, clientY);
+  // helper to dispatch events at coords
+  function dispatchClickAt(el){
+    const opts = { bubbles:true, cancelable:true, view:window, clientX:clientX, clientY:clientY };
+    try{
+      el.dispatchEvent(new PointerEvent('pointerdown', opts));
+      el.dispatchEvent(new MouseEvent('mousedown', opts));
+      el.dispatchEvent(new MouseEvent('mouseup', opts));
+      el.dispatchEvent(new MouseEvent('click', opts));
+      el.dispatchEvent(new PointerEvent('pointerup', opts));
+      return true;
+    }catch(e){
+      try{ el.click(); return true; }catch(e2){ return false; }
+    }
   }
 
-  // expose for other injected scripts to use
-  window.__rubberDuckyLog = duckLog;
+  // attempt to click the element under the point; if none, create a synthetic click at window
+  let clicked = false;
+  if(target){
+    try{ clicked = dispatchClickAt(target); }catch(e){ clicked = false; }
+  }
+  if(!clicked){
+    // fallback: dispatch mouse events on document at coords
+    const opts = { bubbles:true, cancelable:true, view:window, clientX:clientX, clientY:clientY };
+    try{
+      document.dispatchEvent(new PointerEvent('pointerdown', opts));
+      document.dispatchEvent(new MouseEvent('mousedown', opts));
+      document.dispatchEvent(new MouseEvent('mouseup', opts));
+      document.dispatchEvent(new MouseEvent('click', opts));
+      document.dispatchEvent(new PointerEvent('pointerup', opts));
+      clicked = true;
+    }catch(e){ clicked = false; }
+  }
 
-  duckLog('Debug panel ready');
+  // tiny on-screen confirmation
+  (function showToast(msg){
+    const id = '__rubberducky_toast';
+    let t = document.getElementById(id);
+    if(t) t.remove();
+    t = document.createElement('div');
+    t.id = id;
+    Object.assign(t.style, {
+      position: 'fixed', left: '8px', bottom: '8px', zIndex: 2147483647,
+      background: 'rgba(0,0,0,0.8)', color: '#fff', padding: '6px 10px', borderRadius: '6px',
+      fontSize: '12px', fontFamily: 'sans-serif'
+    });
+    t.textContent = msg;
+    document.documentElement.appendChild(t);
+    setTimeout(()=>t.remove(), 3000);
+  })('RubberDucky: clicked? ' + clicked + ' at ('+clientX+','+clientY+')');
 
-  // If your injector already defines a function window.rubberDuckyRun, call it and capture output.
-  try {
-    if(typeof window.rubberDuckyRun === 'function'){
-      duckLog('Found rubberDuckyRun() — executing it now');
-      const res = window.rubberDuckyRun();
-      if(res && typeof res.then === 'function'){
-        duckLog('rubberDuckyRun returned a Promise — waiting');
-        res.then(r=>duckLog('rubberDuckyRun resolved: ' + JSON.stringify(r))).catch(e=>duckLog('rubberDuckyRun error: '+e));
-      } else duckLog('rubberDuckyRun returned: ' + JSON.stringify(res));
-      return;
-    }
-  } catch(e){ duckLog('Error calling rubberDuckyRun: '+e); }
-
-  // If no rubberDuckyRun, run a small probe: find the button or note if iframes are inaccessible
-  try {
-    const sel = ['#View71', '.play-slideshow.title.view.button', '.play-slideshow', 'button', '[role="button"]'];
-    let found = false;
-    for(const s of sel){
-      try{
-        const el = document.querySelector(s);
-        duckLog('query "'+s+'" -> ' + (el ? 'FOUND' : 'null'));
-        if(el && !found){ found = true; el.setAttribute('data-rubberducky-probe','1'); duckLog('Marked element for visual check'); }
-      }catch(e){ duckLog('selector error: '+s+' -> '+e); }
-    }
-    // check if any iframe is accessible
-    const iframes = Array.from(document.querySelectorAll('iframe'));
-    duckLog('iframes found: ' + iframes.length);
-    for(const f of iframes){
-      try{
-        const doc = f.contentDocument;
-        if(!doc) { duckLog('iframe inaccessible (no contentDocument) src:'+ (f.src||'')); continue; }
-        duckLog('iframe same-origin accessible src:' + (f.src||''));
-        const el = doc.querySelector('#View71') || doc.querySelector('.play-slideshow.title.view.button') || doc.querySelector('button, [role="button"]');
-        duckLog('iframe query result: ' + (el ? 'FOUND' : 'null'));
-      }catch(e){
-        duckLog('iframe access error (cross-origin likely) src:' + (f.src||'') + ' err:' + e);
-      }
-    }
-    if(!found) duckLog('No matching element in main document — try iframe or cross-origin');
-  } catch(e){ duckLog('Probe error: '+e); }
-
-  // small visual helper: flash any element with data-rubberducky-probe
-  try{
-    const el = document.querySelector('[data-rubberducky-probe="1"]');
-    if(el){
-      const old = el.style.boxShadow;
-      el.style.boxShadow = '0 0 0 3px rgba(255,200,0,0.9)';
-      setTimeout(()=> el.style.boxShadow = old, 5000);
-      duckLog('Highlighted candidate element briefly');
-    }
-  }catch(e){}
+  return { clicked: clicked, clientX: clientX, clientY: clientY, targetTag: target ? target.tagName : null };
 })();
