@@ -12,74 +12,76 @@ website that drives End parents Fire Foto Frame
 
 
 
-(function startICloudSlideshow(opts){
-  opts = Object.assign({thumbTimeout:30000, viewerTimeout:20000, poll:200, postClickDelay:600}, opts||{});
+<script>
+  (function () {
+  'use strict';
 
-  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-  function findThumb(){
-    const img = document.querySelector('img[src*="icloud-content.com"]');
-    if(!img) return null;
-    return img.closest('.x-stream-photo-grid-item-view') || img.closest('.view.button') || img;
+  const TARGET_ID = 'View80';
+  const PAUSED_TEXT = 'Slideshow Paused';
+  const STARTED_TEXT = 'Slideshow Started';
+
+  function getTarget() {
+    return document.getElementById(TARGET_ID);
   }
 
-  (async ()=>{
-    const start = Date.now();
-    let thumb = null;
-    while(Date.now()-start < opts.thumbTimeout){
-      thumb = findThumb();
-      if(thumb) break;
-      await sleep(opts.poll);
-    }
-    if(!thumb){ console.warn('Slideshow: thumbnail not found'); return; }
-    console.log('Slideshow: found thumb', thumb);
+  function setStarted(el) {
+    if (!el) return;
+    if (el.dataset.originalText === undefined) el.dataset.originalText = el.textContent || '';
+    el.textContent = STARTED_TEXT;
+  }
 
-   
-    try{ thumb.click(); } catch(e){
-      thumb.dispatchEvent(new MouseEvent('click',{bubbles:true, cancelable:true}));
+  function setPaused(el) {
+    if (!el) return;
+    // restore original only if we changed it earlier
+    if ((el.textContent || '').trim() === STARTED_TEXT && el.dataset.originalText !== undefined) {
+      el.textContent = el.dataset.originalText;
+    } else if ((el.textContent || '').trim() === STARTED_TEXT) {
+      // If no original stored, set to PAUSED_TEXT per request
+      el.textContent = PAUSED_TEXT;
     }
-    await sleep(opts.postClickDelay);
+  }
 
-  
-    const vStart = Date.now();
-    let header = null, play = null, item = null;
-    while(Date.now()-vStart < opts.viewerTimeout){
-      header = document.querySelector('.x-slideshow-header, #View69');
-      play = document.querySelector('#View71, .play-slideshow, .play-button, [aria-label*="Play"], button[title*="Play"]');
-      item = document.querySelector('.slideshow-page, .slideshow-item, #View68, #View1955');
-      if(play) break;
-      if(header || item) {
-        
+  // Toggle to STARTED whenever the element exists in DOM (visible or hidden),
+  // and restore to PAUSED (or original) when it is removed from DOM.
+  function watchExistence(el) {
+    if (!el) return;
+    // mark that we set it
+    setStarted(el);
+  }
+
+  function unwatch(el) {
+    if (!el) return;
+    setPaused(el);
+  }
+
+  function init() {
+    let current = getTarget();
+    if (current) watchExistence(current);
+
+    const mo = new MutationObserver(() => {
+      const el = getTarget();
+      if (el && el !== current) {
+        if (current) unwatch(current);
+        current = el;
+        watchExistence(current);
+      } else if (!el && current) {
+        unwatch(current);
+        current = null;
       }
-      await sleep(opts.poll);
-    }
-    if(!play){
-      // try to reveal header then query #View71 directly
-      header = document.querySelector('#View69');
-      if(header && getComputedStyle(header).display === 'none') header.style.display = '';
-      play = document.querySelector('#View71');
-    }
-    if(!play){
-      console.warn('Slideshow: play button not found; attempting keyboard / viewer click fallback');
-     
-      const viewerArea = document.querySelector('.slideshow-page, .slideshow-item, #View68');
-      if(viewerArea){
-        try{ viewerArea.click(); } catch(e){ viewerArea.dispatchEvent(new MouseEvent('click',{bubbles:true})); }
-        await sleep(400);
-        play = document.querySelector('#View71, .play-slideshow, .play-button, [aria-label*="Play"]');
-      }
-    }
-    if(!play){ console.warn('Slideshow: still no play button'); return; }
-    console.log('Slideshow: found play button', play);
+    });
 
-    // make sure it's clickable
-    try{ play.click(); console.log('Slideshow: clicked play'); return; }catch(e){}
-    try{ play.dispatchEvent(new MouseEvent('click',{bubbles:true, cancelable:true})); console.log('Slideshow: dispatched click'); return; }catch(e){}
-    // final fallback: simulate Enter/Space on the element
-    try{
-      play.focus && play.focus();
-      const ev = new KeyboardEvent('keydown',{key:' ',code:'Space',bubbles:true});
-      play.dispatchEvent(ev);
-      console.log('Slideshow: sent Space key');
-    }catch(e){ console.warn('Slideshow: fallback failed', e); }
-  })();
+    mo.observe(document.documentElement || document.body, { childList: true, subtree: true });
+
+    window.addEventListener('beforeunload', () => {
+      mo.disconnect();
+      if (current) unwatch(current);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
+</script>
