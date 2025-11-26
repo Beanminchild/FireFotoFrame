@@ -9,3 +9,7 @@ website that drives End parents Fire Foto Frame
   }, 40000);
 </script>
 
+(function injected(){
+  const el = document.querySelector('.classview.x-slideshow-header.desktop');
+  if(el) el.click();
+})();
