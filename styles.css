@@ -1,4 +1,15 @@
 /* From Uiverse.io by Shoh2008 */ 
+.loader-wrap{
+  position: fixed;
+  inset: 0;               /* top:0; right:0; bottom:0; left:0 */
+  display: flex;
+  align-items: center;    /* vertical center */
+  justify-content: center;/* horizontal center */
+  pointer-events: none;   /* optional: lets clicks pass through the loader */
+  background: transparent;/* optional: use rgba(...) to dim background */
+  z-index: 9999;          /* ensure it's on top */
+}
+
 .loader {
   position: relative;
   font-size: 16px;

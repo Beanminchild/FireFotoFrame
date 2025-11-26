@@ -2,10 +2,10 @@
 (function() {
   const urls = [
     "https://www.icloud.com/sharedalbum/#B1z53qWtHqA2mdx",
-    "https://youtube.com",
-    "https://duckduckgo.com"
+    
+    "https://duckduckgo.com/?q=weather+in+plum+pa&atb=v481-1&ia=web"
   ];
-  const delayMs = 3000; // 30 seconds
+  const delayMs = 30000; // 30 seconds
 
   function redirectRandom() {
     const choice = urls[Math.floor(Math.random() * urls.length)];
