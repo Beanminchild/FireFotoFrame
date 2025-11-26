@@ -128,3 +128,119 @@ website that drives End parents Fire Foto Frame
 })();
 
 
+
+
+
+
+
+
+/// here zach 
+
+
+
+(function rubberDuckyOnScreenLogger(){
+  // create/replace debug panel
+  const id = '__rubberducky_debug_panel';
+  let panel = document.getElementById(id);
+  if(panel) panel.remove();
+  panel = document.createElement('div');
+  panel.id = id;
+  Object.assign(panel.style, {
+    position: 'fixed',
+    right: '8px',
+    top: '8px',
+    zIndex: 2147483647,
+    width: '320px',
+    maxHeight: '60vh',
+    overflowY: 'auto',
+    background: 'rgba(0,0,0,0.85)',
+    color: '#fff',
+    fontSize: '12px',
+    padding: '8px',
+    borderRadius: '8px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.6)',
+    lineHeight: '1.3',
+    fontFamily: 'monospace'
+  });
+  const header = document.createElement('div');
+  header.textContent = 'RubberDucky Debug';
+  header.style.fontWeight = '700';
+  header.style.marginBottom = '6px';
+  const clearBtn = document.createElement('button');
+  clearBtn.textContent = 'Clear';
+  Object.assign(clearBtn.style, { float:'right', fontSize:'11px', marginLeft:'6px' });
+  clearBtn.addEventListener('click', ()=>{ body.innerHTML=''; });
+  header.appendChild(clearBtn);
+  panel.appendChild(header);
+  const body = document.createElement('div');
+  panel.appendChild(body);
+  document.documentElement.appendChild(panel);
+
+  // helper log
+  function duckLog(msg){
+    const line = document.createElement('div');
+    line.textContent = (new Date()).toISOString() + ' — ' + String(msg);
+    body.appendChild(line);
+    body.scrollTop = body.scrollHeight;
+    // auto-remove old lines
+    if(body.children.length > 200) body.removeChild(body.children[0]);
+    console.log('RubberDucky:', msg);
+  }
+
+  // expose for other injected scripts to use
+  window.__rubberDuckyLog = duckLog;
+
+  duckLog('Debug panel ready');
+
+  // If your injector already defines a function window.rubberDuckyRun, call it and capture output.
+  try {
+    if(typeof window.rubberDuckyRun === 'function'){
+      duckLog('Found rubberDuckyRun() — executing it now');
+      const res = window.rubberDuckyRun();
+      if(res && typeof res.then === 'function'){
+        duckLog('rubberDuckyRun returned a Promise — waiting');
+        res.then(r=>duckLog('rubberDuckyRun resolved: ' + JSON.stringify(r))).catch(e=>duckLog('rubberDuckyRun error: '+e));
+      } else duckLog('rubberDuckyRun returned: ' + JSON.stringify(res));
+      return;
+    }
+  } catch(e){ duckLog('Error calling rubberDuckyRun: '+e); }
+
+  // If no rubberDuckyRun, run a small probe: find the button or note if iframes are inaccessible
+  try {
+    const sel = ['#View71', '.play-slideshow.title.view.button', '.play-slideshow', 'button', '[role="button"]'];
+    let found = false;
+    for(const s of sel){
+      try{
+        const el = document.querySelector(s);
+        duckLog('query "'+s+'" -> ' + (el ? 'FOUND' : 'null'));
+        if(el && !found){ found = true; el.setAttribute('data-rubberducky-probe','1'); duckLog('Marked element for visual check'); }
+      }catch(e){ duckLog('selector error: '+s+' -> '+e); }
+    }
+    // check if any iframe is accessible
+    const iframes = Array.from(document.querySelectorAll('iframe'));
+    duckLog('iframes found: ' + iframes.length);
+    for(const f of iframes){
+      try{
+        const doc = f.contentDocument;
+        if(!doc) { duckLog('iframe inaccessible (no contentDocument) src:'+ (f.src||'')); continue; }
+        duckLog('iframe same-origin accessible src:' + (f.src||''));
+        const el = doc.querySelector('#View71') || doc.querySelector('.play-slideshow.title.view.button') || doc.querySelector('button, [role="button"]');
+        duckLog('iframe query result: ' + (el ? 'FOUND' : 'null'));
+      }catch(e){
+        duckLog('iframe access error (cross-origin likely) src:' + (f.src||'') + ' err:' + e);
+      }
+    }
+    if(!found) duckLog('No matching element in main document — try iframe or cross-origin');
+  } catch(e){ duckLog('Probe error: '+e); }
+
+  // small visual helper: flash any element with data-rubberducky-probe
+  try{
+    const el = document.querySelector('[data-rubberducky-probe="1"]');
+    if(el){
+      const old = el.style.boxShadow;
+      el.style.boxShadow = '0 0 0 3px rgba(255,200,0,0.9)';
+      setTimeout(()=> el.style.boxShadow = old, 5000);
+      duckLog('Highlighted candidate element briefly');
+    }
+  }catch(e){}
+})();
