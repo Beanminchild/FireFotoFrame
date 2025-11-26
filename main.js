@@ -1,8 +1,8 @@
 
 (function() {
   const urls = [
-    "https://example.com",
-    "https://example.org",
+    "https://www.icloud.com/sharedalbum/#B1z53qWtHqA2mdx",
+    "https://youtube.com",
     "https://duckduckgo.com"
   ];
   const delayMs = 30000; // 30 seconds
