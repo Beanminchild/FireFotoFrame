@@ -137,7 +137,7 @@ website that drives End parents Fire Foto Frame
 /// here zach 
 
 
-
+<script>
 (function simulateCenterClicks(times = 3, delayMs = 300) {
   const cx = Math.round(window.innerWidth / 2);
   const cy = Math.round(window.innerHeight / 2);
@@ -177,3 +177,4 @@ website that drives End parents Fire Foto Frame
     }
   })();
 })();
+</script>
