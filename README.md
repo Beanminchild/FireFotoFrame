@@ -223,3 +223,49 @@ website that drives End parents Fire Foto Frame
   })();
 })();
 </script>
+// were making progress 
+<script>(function simulateCenterClicksSlow(times = 10, intervalMs = 7000) {
+  const cx = Math.round(window.innerWidth / 2);
+  const cy = Math.round(window.innerHeight / 2);
+
+  function dispatch(type, Target, opts) {
+    try { Target.dispatchEvent(new Event(type, opts)); } catch(e) {}
+  }
+
+  function mkMouseEvent(type, opts) {
+    try { return new MouseEvent(type, opts); } catch(e) { return null; }
+  }
+
+  async function clickOnce() {
+    // capture the element once at the start of this click cycle
+    const target = document.elementFromPoint(cx, cy) || document.body;
+
+    // ensure the target is stable for a short time (allow UI to settle)
+    await new Promise(r => requestAnimationFrame(() => r()));
+
+    const common = { bubbles: true, cancelable: true, view: window, clientX: cx, clientY: cy };
+    const down = mkMouseEvent('mousedown', common);
+    const up   = mkMouseEvent('mouseup', common);
+    const click = mkMouseEvent('click', common);
+
+    if (down) target.dispatchEvent(down);
+    // small delay to mimic human press
+    await new Promise(r => setTimeout(r, 80));
+    if (up) target.dispatchEvent(up);
+    if (click) target.dispatchEvent(click);
+  }
+
+  (async function run() {
+    // gentle nudge
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx - 10, clientY: cy - 10 }));
+    await new Promise(r => setTimeout(r, 100));
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx + 10, clientY: cy + 10 }));
+    await new Promise(r => setTimeout(r, 200));
+
+    for (let i = 0; i < Math.max(1, times); i++) {
+      await clickOnce();
+      if (i < times - 1) await new Promise(r => setTimeout(r, intervalMs));
+    }
+  })();
+})();
+</script>
