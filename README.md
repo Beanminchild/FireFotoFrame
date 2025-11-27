@@ -2,65 +2,47 @@
 website that drives End parents Fire Foto Frame
 
 <script>
-
-function autoProgressAlbum() {
-  
-  const rightArrowEvent = new KeyboardEvent('keydown', {
-    key: 'ArrowRight',
-    keyCode: 39,
-    which: 39,
-    bubbles: true,
-    cancelable: true
-  });
-
-  
-  document.dispatchEvent(rightArrowEvent);
-}
-
-
-function startAutoProgress() {
-  
-  if (window.albumProgressInterval) {
-    clearInterval(window.albumProgressInterval);
-  }
-
-  
-  window.albumProgressInterval = setInterval(autoProgressAlbum, 7000);
-}
-
-
-window.addEventListener('load', startAutoProgress);
-
-
-</script>
-
-
-
-
-
-// new approach 
-
-<script>(function() {
-    
-    const rightThirdStart = window.innerWidth * (2/3);
-    
-    
-    const clickX = rightThirdStart + 50;  
-    
-    const clickEvent = new MouseEvent('click', {
-        view: window,
+function simulateRightArrowNatively() {
+    // Most authentic method: Native keyboard event simulation
+    const event = new KeyboardEvent('keydown', {
+        key: 'ArrowRight',
+        keyCode: 39,
+        which: 39,
         bubbles: true,
         cancelable: true,
-        clientX: clickX,
-        clientY: 50  
+        view: window,
+        composed: true,
+        isTrusted: true  // This doesn't actually make it trusted, but worth trying
+    });
+
+    // Multiple dispatch methods to increase chances of working
+    window.dispatchEvent(event);
+    document.dispatchEvent(event);
+    
+    // If the above doesn't work, try triggering on the active element
+    if (document.activeElement) {
+        document.activeElement.dispatchEvent(event);
+    }
+
+    // Additional method: Programmatic key press
+    const keyboardEventUp = new KeyboardEvent('keyup', {
+        key: 'ArrowRight',
+        keyCode: 39,
+        which: 39,
+        bubbles: true,
+        cancelable: true
     });
     
-    const targetElement = document.elementFromPoint(clickX, 50);
-    
-    
-    if (targetElement) {
-        targetElement.dispatchEvent(clickEvent);
-    }
-})();
+    window.dispatchEvent(keyboardEventUp);
+}
+
+// Create an interval that simulates right arrow key press every 7 seconds
+const slideShowInterval = setInterval(simulateRightArrowNatively, 7000);
+
+// Optional: Stop after 5 minutes
+setTimeout(() => {
+    clearInterval(slideShowInterval);
+    console.log('Slideshow stopped');
+}, 5 * 60 * 1000);
 
 </script>
