@@ -4,32 +4,30 @@ website that drives End parents Fire Foto Frame
 
 
 <script>(function() {
-    const advanceSlide = () => {
-        const clickEvent = new MouseEvent('click', {
+    const clickRight = () => {
+        const evt = new MouseEvent('click', {
             view: window,
             bubbles: true,
             cancelable: true,
-            clientX: window.innerWidth - 10,
+            clientX: window.innerWidth - 50,
             clientY: window.innerHeight / 2
         });
         
-        const targetElement = document.elementFromPoint(window.innerWidth - 10, window.innerHeight / 2);
-        targetElement.dispatchEvent(clickEvent);
+        const el = document.elementFromPoint(window.innerWidth - 50, window.innerHeight / 2);
+        if (el) el.dispatchEvent(evt);
     };
 
-    const startSlideshow = () => {
+    const slideshow = () => {
         let timer;
-        const runSlideshow = () => {
-            advanceSlide();
-            timer = setTimeout(runSlideshow, 7000);
+        const advance = () => {
+            clickRight();
+            timer = window.setTimeout(advance, 7000);
         };
-        
-        runSlideshow();
-        
-        return () => clearTimeout(timer);
+        advance();
+        return () => window.clearTimeout(timer);
     };
 
-    const stopSlideshow = startSlideshow();
+    slideshow();
 })();
 
 </script>
