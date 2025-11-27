@@ -375,27 +375,38 @@ website that drives End parents Fire Foto Frame
 
 // snapshot
 
-<script>(function startSimpleCenterClicker(times = Infinity, intervalMs = 3000) {
-  const cx = Math.round(window.innerWidth / 2);
-  const cy = Math.round(window.innerHeight / 2);
-  let running = true;
-  let count = 0;
-  async function once() {
-    const target = document.elementFromPoint(cx, cy) || document.body;
-    const opts = { bubbles: true, cancelable: true, view: window, clientX: cx, clientY: cy };
+<script>(function autoCenterClicker(maxClicks = 100, intervalMs = 3000, firstDelayMs = 500) {
+  const cx = () => Math.round(window.innerWidth / 2);
+  const cy = () => Math.round(window.innerHeight / 2);
+  let stopped = false;
+
+  function fireClickAtCenter() {
+    const target = document.elementFromPoint(cx(), cy()) || document.body;
+    const opts = { bubbles: true, cancelable: true, view: window, clientX: cx(), clientY: cy() };
     try { target.dispatchEvent(new MouseEvent('mousedown', opts)); } catch {}
-    await new Promise(r => setTimeout(r, 80));
-    try { target.dispatchEvent(new MouseEvent('mouseup', opts)); } catch {}
-    try { target.dispatchEvent(new MouseEvent('click', opts)); } catch {}
+    setTimeout(() => {
+      try { target.dispatchEvent(new MouseEvent('mouseup', opts)); } catch {}
+      try { target.dispatchEvent(new MouseEvent('click', opts)); } catch {}
+    }, 80);
   }
+
+  async function waitForReady() {
+    if (document.readyState === 'complete' || document.readyState === 'interactive') return;
+    await new Promise(r => document.addEventListener('readystatechange', function f() { if (document.readyState !== 'loading') { document.removeEventListener('readystatechange', f); r(); } }));
+  }
+
   (async function run() {
-    while (running && count < times) {
-      await once();
+    await waitForReady();
+    await new Promise(r => setTimeout(r, firstDelayMs));
+    let count = 0;
+    while (!stopped && count < maxClicks) {
+      fireClickAtCenter();
       count++;
       await new Promise(r => setTimeout(r, intervalMs));
     }
   })();
-  return () => { running = false; };
-}
+
+  return { stop: () => { stopped = true; } };
+})();
 
 </script>
