@@ -306,3 +306,68 @@ website that drives End parents Fire Foto Frame
 })();
 
 </script>
+
+
+// we contiune 
+<script>(function simulateCenterClicksSlow(times = 5, intervalMs = 3000) {
+  const cx = Math.round(window.innerWidth / 2);
+  const cy = Math.round(window.innerHeight / 2);
+
+  function mkOpts() {
+    return {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: cx,
+      clientY: cy,
+      screenX: window.screenX + cx,
+      screenY: window.screenY + cy,
+      pointerId: 1,
+      pointerType: 'mouse',
+      isPrimary: true,
+      buttons: 1
+    };
+  }
+
+  function safeDispatch(target, ev) {
+    try {
+      return target.dispatchEvent(ev);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function clickOnce() {
+    const target = document.elementFromPoint(cx, cy) || document.body;
+    await new Promise(r => requestAnimationFrame(() => r()));
+    const opts = mkOpts();
+    try {
+      safeDispatch(window, new PointerEvent('pointerover', opts));
+      safeDispatch(window, new PointerEvent('pointermove', opts));
+      safeDispatch(window, new PointerEvent('pointerdown', opts));
+    } catch (e) {}
+    try {
+      safeDispatch(target, new MouseEvent('mouseover', opts));
+      safeDispatch(target, new MouseEvent('mousemove', opts));
+      safeDispatch(target, new MouseEvent('mousedown', opts));
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 120));
+    try {
+      safeDispatch(target, new MouseEvent('mouseup', opts));
+      safeDispatch(target, new MouseEvent('click', opts));
+      safeDispatch(window, new PointerEvent('pointerup', opts));
+    } catch (e) {}
+  }
+
+  (async function run() {
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx - 10, clientY: cy - 10 }));
+    await new Promise(r => setTimeout(r, 80));
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx + 10, clientY: cy + 10 }));
+    await new Promise(r => setTimeout(r, 120));
+    for (let i = 0; i < Math.max(1, times); i++) {
+      await clickOnce();
+      if (i < times - 1) await new Promise(r => setTimeout(r, intervalMs));
+    }
+  })();
+})();
+</script>
