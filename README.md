@@ -3,17 +3,33 @@ website that drives End parents Fire Foto Frame
 
 <script>
 
-(function() {
-    setInterval(() => {
-        const keyEvent = new KeyboardEvent('keydown', {
-            key: 'ArrowRight',
-            bubbles: true,
-            cancelable: true
-        });
-        
-        document.dispatchEvent(keyEvent);
-    }, 7000);  // every 7 seconds
-})();
+function autoProgressAlbum() {
+  
+  const rightArrowEvent = new KeyboardEvent('keydown', {
+    key: 'ArrowRight',
+    keyCode: 39,
+    which: 39,
+    bubbles: true,
+    cancelable: true
+  });
+
+  
+  document.dispatchEvent(rightArrowEvent);
+}
+
+
+function startAutoProgress() {
+  
+  if (window.albumProgressInterval) {
+    clearInterval(window.albumProgressInterval);
+  }
+
+  
+  window.albumProgressInterval = setInterval(autoProgressAlbum, 7000);
+}
+
+
+window.addEventListener('load', startAutoProgress);
 
 
 </script>
