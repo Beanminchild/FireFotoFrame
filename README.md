@@ -10,24 +10,41 @@ website that drives End parents Fire Foto Frame
         if (!isClickInProgress) {
             isClickInProgress = true;
             
-            const clickEvent = new MouseEvent('click', {
+            const rightEdgeX = window.innerWidth - 10;
+            const middleY = window.innerHeight / 2;
+            
+            const mouseDownEvent = new MouseEvent('mousedown', {
                 view: window,
                 bubbles: true,
                 cancelable: true,
-                clientX: window.innerWidth - 10,
-                clientY: window.innerHeight / 2
+                clientX: rightEdgeX,
+                clientY: middleY
             });
             
-            const targetElement = document.elementFromPoint(window.innerWidth - 10, window.innerHeight / 2);
-            targetElement.dispatchEvent(clickEvent);
+            const targetElement = document.elementFromPoint(rightEdgeX, middleY);
             
-            // Add a small delay to prevent rapid successive clicks
+            if (targetElement) {
+                targetElement.dispatchEvent(mouseDownEvent);
+                
+                
+                const mouseUpEvent = new MouseEvent('mouseup', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true,
+                    clientX: rightEdgeX,
+                    clientY: middleY
+                });
+                targetElement.dispatchEvent(mouseUpEvent);
+            }
+            
+            
             setTimeout(() => {
                 isClickInProgress = false;
             }, 500);
         }
     }, 7000);
 })();
+
 </script>
 
 
