@@ -178,3 +178,48 @@ website that drives End parents Fire Foto Frame
   })();
 })();
 </script>
+
+
+// ,maybe better?
+
+<script>(function simulateCenterClicksSlow(times = 10, intervalMs = 7000) {
+  const cx = Math.round(window.innerWidth / 2);
+  const cy = Math.round(window.innerHeight / 2);
+
+  function dispatchPointer(type, opts) {
+    try { window.dispatchEvent(new PointerEvent(type, opts)); } catch (e) {}
+  }
+  function dispatchMouse(target, type, opts) {
+    try { target.dispatchEvent(new MouseEvent(type, opts)); } catch (e) {}
+  }
+
+  function clickOnce() {
+    const opts = { bubbles: true, cancelable: true, view: window, clientX: cx, clientY: cy };
+    dispatchPointer('pointerover', opts);
+    dispatchPointer('pointermove', opts);
+    dispatchPointer('pointerdown', opts);
+
+    const target = document.elementFromPoint(cx, cy) || document.body;
+    dispatchMouse(target, 'mouseover', opts);
+    dispatchMouse(target, 'mousemove', opts);
+    dispatchMouse(target, 'mousedown', opts);
+    dispatchMouse(target, 'mouseup', opts);
+    dispatchMouse(target, 'click', opts);
+
+    dispatchPointer('pointerup', opts);
+  }
+
+  (async function run() {
+    // small initial nudge to wake UI
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx - 10, clientY: cy - 10 }));
+    await new Promise(r => setTimeout(r, 100));
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx + 10, clientY: cy + 10 }));
+    await new Promise(r => setTimeout(r, 200));
+
+    for (let i = 0; i < Math.max(1, times); i++) {
+      clickOnce();
+      if (i < times - 1) await new Promise(r => setTimeout(r, intervalMs));
+    }
+  })();
+})();
+</script>
