@@ -4,46 +4,17 @@ website that drives End parents Fire Foto Frame
 <script>
 
 (function() {
-    let isClickInProgress = false;
-    
     setInterval(() => {
-        if (!isClickInProgress) {
-            isClickInProgress = true;
-            
-            const rightEdgeX = window.innerWidth - 10;
-            const middleY = window.innerHeight / 2;
-            
-            const mouseDownEvent = new MouseEvent('mousedown', {
-                view: window,
-                bubbles: true,
-                cancelable: true,
-                clientX: rightEdgeX,
-                clientY: middleY
-            });
-            
-            const targetElement = document.elementFromPoint(rightEdgeX, middleY);
-            
-            if (targetElement) {
-                targetElement.dispatchEvent(mouseDownEvent);
-                
-                
-                const mouseUpEvent = new MouseEvent('mouseup', {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true,
-                    clientX: rightEdgeX,
-                    clientY: middleY
-                });
-                targetElement.dispatchEvent(mouseUpEvent);
-            }
-            
-            
-            setTimeout(() => {
-                isClickInProgress = false;
-            }, 500);
-        }
-    }, 7000);
+        const keyEvent = new KeyboardEvent('keydown', {
+            key: 'ArrowRight',
+            bubbles: true,
+            cancelable: true
+        });
+        
+        document.dispatchEvent(keyEvent);
+    }, 7000);  // every 7 seconds
 })();
+
 
 </script>
 
