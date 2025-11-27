@@ -3,7 +3,7 @@ website that drives End parents Fire Foto Frame
 
 <script>
 
-  function simulateRightArrowNatively() {
+ function simulateRightArrowNatively() {
     try {
         const event = new KeyboardEvent('keydown', {
             key: 'ArrowRight',
@@ -13,24 +13,13 @@ website that drives End parents Fire Foto Frame
             cancelable: true
         });
         
-        const body = document.body;
-        if (body) {
-            body.dispatchEvent(event);
-        }
-        
-        const activeElement = document.activeElement;
-        if (activeElement) {
-            activeElement.dispatchEvent(event);
-        }
-        
-        const nextButton = document.querySelector('button[aria-label="Next"], [data-testid="next-button"]');
-        if (nextButton) {
-            nextButton.click();
-        }
+        window.dispatchEvent(event);
     } catch (error) {
         console.error('Navigation error:', error);
     }
 }
 
-setInterval(simulateRightArrowNatively, 7000);
+setInterval(simulateRightArrowNatively, 20000);
+
+
 </script>
