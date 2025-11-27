@@ -1,52 +1,31 @@
 # Fire-Foto-Frame
 website that drives End parents Fire Foto Frame
 
+<script>
 
-
-<script>(function() {
-    const clickRight = () => {
-        const evt = new MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-            clientX: window.innerWidth - 50,
-            clientY: window.innerHeight / 2
-        });
-        
-        const el = document.elementFromPoint(window.innerWidth - 50, window.innerHeight / 2);
-        if (el) el.dispatchEvent(evt);
-    };
-
-    const slideshow = () => {
-        let timer;
-        const advance = () => {
-            clickRight();
-            timer = window.setTimeout(advance, 7000);
-        };
-        advance();
-        return () => window.clearTimeout(timer);
-    };
-
-    slideshow();
-})();
-
-</script>
-
-
-</script>
-// were making progress 
-<script>(function() {
+(function() {
+    let isClickInProgress = false;
+    
     setInterval(() => {
-        const clickEvent = new MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-            clientX: window.innerWidth - 10,
-            clientY: window.innerHeight / 2
-        });
-        document.elementFromPoint(window.innerWidth - 10, window.innerHeight / 2).dispatchEvent(clickEvent);
+        if (!isClickInProgress) {
+            isClickInProgress = true;
+            
+            const clickEvent = new MouseEvent('click', {
+                view: window,
+                bubbles: true,
+                cancelable: true,
+                clientX: window.innerWidth - 10,
+                clientY: window.innerHeight / 2
+            });
+            
+            const targetElement = document.elementFromPoint(window.innerWidth - 10, window.innerHeight / 2);
+            targetElement.dispatchEvent(clickEvent);
+            
+            // Add a small delay to prevent rapid successive clicks
+            setTimeout(() => {
+                isClickInProgress = false;
+            }, 500);
+        }
     }, 7000);
 })();
-
-
 </script>
