@@ -138,90 +138,42 @@ website that drives End parents Fire Foto Frame
 
 
 
-(function rubberDuckyClickCoords(){
-  // CONFIG: set clientX/clientY to specific viewport coordinates (pixels), or leave null to use center
-  const COORDS = { clientX: null, clientY: null }; // e.g. {clientX: 400, clientY: 320}
-  const DURATION_MS = 250; // marker visible time
+(function simulateCenterClicks(times = 3, delayMs = 300) {
+  const cx = Math.round(window.innerWidth / 2);
+  const cy = Math.round(window.innerHeight / 2);
 
-  // compute center if not provided
-  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-  const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-  const clientX = (COORDS.clientX == null) ? Math.round(vw/2) : Math.round(COORDS.clientX);
-  const clientY = (COORDS.clientY == null) ? Math.round(vh/2) : Math.round(COORDS.clientY);
+  function dispatchPointer(type, opts) {
+    try { window.dispatchEvent(new PointerEvent(type, opts)); } catch (e) {}
+  }
+  function dispatchMouse(target, type, opts) {
+    try { target.dispatchEvent(new MouseEvent(type, opts)); } catch (e) {}
+  }
 
-  // create visual marker so you can confirm where it will click
-  const markId = '__rubberducky_click_marker';
-  let m = document.getElementById(markId);
-  if(m) m.remove();
-  m = document.createElement('div');
-  m.id = markId;
-  Object.assign(m.style, {
-    position: 'fixed',
-    left: (clientX - 12) + 'px',
-    top: (clientY - 12) + 'px',
-    width: '24px',
-    height: '24px',
-    borderRadius: '12px',
-    background: 'rgba(255,0,0,0.8)',
-    border: '2px solid #fff',
-    zIndex: 2147483647,
-    pointerEvents: 'none',
-    boxShadow: '0 0 8px rgba(0,0,0,0.6)'
-  });
-  document.documentElement.appendChild(m);
-  setTimeout(()=>{ try{ m.remove(); }catch(e){} }, DURATION_MS);
+  function clickOnce() {
+    const opts = { bubbles: true, cancelable: true, view: window, clientX: cx, clientY: cy };
+    dispatchPointer('pointerover', opts);
+    dispatchPointer('pointermove', opts);
+    dispatchPointer('pointerdown', opts);
 
-  // find the topmost element at that viewport coordinate
-  const target = document.elementFromPoint(clientX, clientY);
-  // helper to dispatch events at coords
-  function dispatchClickAt(el){
-    const opts = { bubbles:true, cancelable:true, view:window, clientX:clientX, clientY:clientY };
-    try{
-      el.dispatchEvent(new PointerEvent('pointerdown', opts));
-      el.dispatchEvent(new MouseEvent('mousedown', opts));
-      el.dispatchEvent(new MouseEvent('mouseup', opts));
-      el.dispatchEvent(new MouseEvent('click', opts));
-      el.dispatchEvent(new PointerEvent('pointerup', opts));
-      return true;
-    }catch(e){
-      try{ el.click(); return true; }catch(e2){ return false; }
+    const target = document.elementFromPoint(cx, cy) || document.body;
+    dispatchMouse(target, 'mouseover', opts);
+    dispatchMouse(target, 'mousemove', opts);
+    dispatchMouse(target, 'mousedown', opts);
+    dispatchMouse(target, 'mouseup', opts);
+    dispatchMouse(target, 'click', opts);
+
+    dispatchPointer('pointerup', opts);
+  }
+
+  (async function run() {
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx - 10, clientY: cy - 10 }));
+    await new Promise(r => setTimeout(r, 60));
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx + 10, clientY: cy + 10 }));
+    await new Promise(r => setTimeout(r, 60));
+
+    for (let i = 0; i < Math.max(1, times); i++) {
+      clickOnce();
+      await new Promise(r => setTimeout(r, delayMs));
     }
-  }
-
-  // attempt to click the element under the point; if none, create a synthetic click at window
-  let clicked = false;
-  if(target){
-    try{ clicked = dispatchClickAt(target); }catch(e){ clicked = false; }
-  }
-  if(!clicked){
-    // fallback: dispatch mouse events on document at coords
-    const opts = { bubbles:true, cancelable:true, view:window, clientX:clientX, clientY:clientY };
-    try{
-      document.dispatchEvent(new PointerEvent('pointerdown', opts));
-      document.dispatchEvent(new MouseEvent('mousedown', opts));
-      document.dispatchEvent(new MouseEvent('mouseup', opts));
-      document.dispatchEvent(new MouseEvent('click', opts));
-      document.dispatchEvent(new PointerEvent('pointerup', opts));
-      clicked = true;
-    }catch(e){ clicked = false; }
-  }
-
-  // tiny on-screen confirmation
-  (function showToast(msg){
-    const id = '__rubberducky_toast';
-    let t = document.getElementById(id);
-    if(t) t.remove();
-    t = document.createElement('div');
-    t.id = id;
-    Object.assign(t.style, {
-      position: 'fixed', left: '8px', bottom: '8px', zIndex: 2147483647,
-      background: 'rgba(0,0,0,0.8)', color: '#fff', padding: '6px 10px', borderRadius: '6px',
-      fontSize: '12px', fontFamily: 'sans-serif'
-    });
-    t.textContent = msg;
-    document.documentElement.appendChild(t);
-    setTimeout(()=>t.remove(), 3000);
-  })('RubberDucky: clicked? ' + clicked + ' at ('+clientX+','+clientY+')');
-
-  return { clicked: clicked, clientX: clientX, clientY: clientY, targetTag: target ? target.tagName : null };
+  })();
 })();
