@@ -224,48 +224,85 @@ website that drives End parents Fire Foto Frame
 })();
 </script>
 // were making progress 
-<script>(function simulateCenterClicksSlow(times = 10, intervalMs = 7000) {
+<script>(function simulateCenterClicksSlow(times = 5, intervalMs = 3000) {
   const cx = Math.round(window.innerWidth / 2);
   const cy = Math.round(window.innerHeight / 2);
 
-  function dispatch(type, Target, opts) {
-    try { Target.dispatchEvent(new Event(type, opts)); } catch(e) {}
+  function mkOpts() {
+    return {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: cx,
+      clientY: cy,
+      screenX: window.screenX + cx,
+      screenY: window.screenY + cy,
+      // pointer-specific
+      pointerId: 1,
+      pointerType: 'mouse',
+      isPrimary: true,
+      buttons: 1
+    };
   }
 
-  function mkMouseEvent(type, opts) {
-    try { return new MouseEvent(type, opts); } catch(e) { return null; }
+  function safeDispatch(target, ev) {
+    try {
+      const ok = target.dispatchEvent(ev);
+      console.log('dispatched', ev.type, 'to', target, '->', ok);
+      return ok;
+    } catch (e) {
+      console.warn('dispatch failed', ev.type, e);
+      return false;
+    }
   }
 
   async function clickOnce() {
-    // capture the element once at the start of this click cycle
+    // snapshot target once
     const target = document.elementFromPoint(cx, cy) || document.body;
+    console.log('target at center:', target);
 
-    // ensure the target is stable for a short time (allow UI to settle)
+    // let layout settle
     await new Promise(r => requestAnimationFrame(() => r()));
 
-    const common = { bubbles: true, cancelable: true, view: window, clientX: cx, clientY: cy };
-    const down = mkMouseEvent('mousedown', common);
-    const up   = mkMouseEvent('mouseup', common);
-    const click = mkMouseEvent('click', common);
+    const opts = mkOpts();
 
-    if (down) target.dispatchEvent(down);
-    // small delay to mimic human press
-    await new Promise(r => setTimeout(r, 80));
-    if (up) target.dispatchEvent(up);
-    if (click) target.dispatchEvent(click);
+    // pointer sequence
+    try {
+      safeDispatch(window, new PointerEvent('pointerover', opts));
+      safeDispatch(window, new PointerEvent('pointermove', opts));
+      safeDispatch(window, new PointerEvent('pointerdown', opts));
+    } catch (e) { console.warn('pointer events failed', e); }
+
+    // mouse sequence on same target
+    try {
+      safeDispatch(target, new MouseEvent('mouseover', opts));
+      safeDispatch(target, new MouseEvent('mousemove', opts));
+      safeDispatch(target, new MouseEvent('mousedown', opts));
+    } catch (e) { console.warn('mouse down events failed', e); }
+
+    // small human-like press
+    await new Promise(r => setTimeout(r, 120));
+
+    try {
+      safeDispatch(target, new MouseEvent('mouseup', opts));
+      safeDispatch(target, new MouseEvent('click', opts));
+      safeDispatch(window, new PointerEvent('pointerup', opts));
+    } catch (e) { console.warn('mouseup/click failed', e); }
   }
 
   (async function run() {
-    // gentle nudge
+    // wake UI
     window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx - 10, clientY: cy - 10 }));
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise(r => setTimeout(r, 80));
     window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: cx + 10, clientY: cy + 10 }));
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 120));
 
     for (let i = 0; i < Math.max(1, times); i++) {
       await clickOnce();
       if (i < times - 1) await new Promise(r => setTimeout(r, intervalMs));
     }
+    console.log('run complete');
   })();
 })();
+
 </script>
