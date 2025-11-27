@@ -375,85 +375,27 @@ website that drives End parents Fire Foto Frame
 
 // snapshot
 
-<script>(function simulateCenterClicksReliable(times = 10, intervalMs = 3000, timeoutMs = 10000) {
+<script>(function startSimpleCenterClicker(times = Infinity, intervalMs = 3000) {
   const cx = Math.round(window.innerWidth / 2);
   const cy = Math.round(window.innerHeight / 2);
-
-  function opts() {
-    return {
-      bubbles: true,
-      cancelable: true,
-      view: window,
-      clientX: cx,
-      clientY: cy,
-      screenX: window.screenX + cx,
-      screenY: window.screenY + cy,
-      pointerId: 1,
-      pointerType: 'mouse',
-      isPrimary: true,
-      buttons: 1
-    };
+  let running = true;
+  let count = 0;
+  async function once() {
+    const target = document.elementFromPoint(cx, cy) || document.body;
+    const opts = { bubbles: true, cancelable: true, view: window, clientX: cx, clientY: cy };
+    try { target.dispatchEvent(new MouseEvent('mousedown', opts)); } catch {}
+    await new Promise(r => setTimeout(r, 80));
+    try { target.dispatchEvent(new MouseEvent('mouseup', opts)); } catch {}
+    try { target.dispatchEvent(new MouseEvent('click', opts)); } catch {}
   }
-
-  function tryDispatch(target, ev) {
-    try { return target.dispatchEvent(ev); } catch (e) { return false; }
-  }
-
-  function firstGestureHandshake(target) {
-    tryDispatch(target, new PointerEvent('pointerdown', opts()));
-    tryDispatch(target, new PointerEvent('pointerup', opts()));
-    tryDispatch(target, new MouseEvent('mousedown', opts()));
-    tryDispatch(target, new MouseEvent('mouseup', opts()));
-    tryDispatch(target, new MouseEvent('click', opts()));
-    try { target.focus && target.focus(); } catch(e){}
-  }
-
-  function waitForStability(checkElement, checkFn) {
-    return new Promise((resolve) => {
-      let resolved = false;
-      const mo = new MutationObserver(() => { if (checkFn()) { if (!resolved) { resolved = true; mo.disconnect(); resolve(true); } }});
-      mo.observe(document, { subtree: true, childList: true, attributes: true });
-      const onAnim = (e) => { if (checkFn()) { if (!resolved) { resolved = true; cleanup(); resolve(true); }} };
-      window.addEventListener('animationend', onAnim, true);
-      window.addEventListener('transitionend', onAnim, true);
-      const timeout = setTimeout(() => { if (!resolved) { resolved = true; cleanup(); resolve(false); } }, timeoutMs);
-      function cleanup() { mo.disconnect(); window.removeEventListener('animationend', onAnim, true); window.removeEventListener('transitionend', onAnim, true); clearTimeout(timeout); }
-      if (checkFn()) { if (!resolved) { resolved = true; cleanup(); resolve(true); } }
-    });
-  }
-
-  async function clickOnceExpectChange() {
-    const initialEl = document.elementFromPoint(cx, cy) || document.body;
-    const img = initialEl.querySelector && initialEl.querySelector('img');
-    const initialSrc = img && img.currentSrc || img && img.src || initialEl.getAttribute && initialEl.getAttribute('data-photo-id') || null;
-    firstGestureHandshake(initialEl);
-    await new Promise(r => requestAnimationFrame(r));
-    const o = opts();
-    tryDispatch(window, new PointerEvent('pointerover', o));
-    tryDispatch(window, new PointerEvent('pointermove', o));
-    tryDispatch(window, new PointerEvent('pointerdown', o));
-    tryDispatch(initialEl, new MouseEvent('mouseover', o));
-    tryDispatch(initialEl, new MouseEvent('mousemove', o));
-    tryDispatch(initialEl, new MouseEvent('mousedown', o));
-    await new Promise(r => setTimeout(r, 100));
-    tryDispatch(initialEl, new MouseEvent('mouseup', o));
-    tryDispatch(initialEl, new MouseEvent('click', o));
-    tryDispatch(window, new PointerEvent('pointerup', o));
-    const changed = await waitForStability(initialEl, () => {
-      const nowImg = document.elementFromPoint(cx, cy) || document.body;
-      const nowImgNode = nowImg.querySelector && nowImg.querySelector('img');
-      const nowSrc = nowImgNode && (nowImgNode.currentSrc || nowImgNode.src) || nowImg.getAttribute && nowImg.getAttribute('data-photo-id') || null;
-      return nowImg !== initialEl || (initialSrc !== null && nowSrc !== initialSrc);
-    });
-    return changed;
-  }
-
   (async function run() {
-    for (let i = 0; i < Math.max(1, times); i++) {
-      const ok = await clickOnceExpectChange();
-      if (!ok) await new Promise(r => setTimeout(r, intervalMs));
-      else await new Promise(r => setTimeout(r, Math.max(500, intervalMs)));
+    while (running && count < times) {
+      await once();
+      count++;
+      await new Promise(r => setTimeout(r, intervalMs));
     }
   })();
-})();
+  return () => { running = false; };
+}
+
 </script>
