@@ -123,11 +123,23 @@ function runSlideshowAutomation() {
 }
 
 
-function repeatSlideshowAutomation() {
+let slideshowCount = 0;
 
+function repeatSlideshowAutomation() {
+    
+    slideshowCount++;
 
     
     runSlideshowAutomation();
+
+   
+    if (slideshowCount >= 5) {
+       
+        window.location.href = "https://beanminchild.github.io/FireFotoFrame/";
+        return; 
+    }
+
+    
     setTimeout(repeatSlideshowAutomation, 30000);
 }
 
