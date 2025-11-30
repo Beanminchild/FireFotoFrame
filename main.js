@@ -13,14 +13,15 @@
     'https://www.icloud.com/sharedalbum/#B1zGfnH8tqM1vul;8598FF63-F82C-46B9-8E5B-4837D6D36768',
     'https://www.icloud.com/sharedalbum/#B1zGrq0zwqrpHfU;4B99F8C2-4CA1-4FB7-8BBC-D4D7B26E2622',
     'https://www.icloud.com/sharedalbum/#B1zGrq0zwqrpHfU;780E8127-8BEE-4967-A772-758E08BBD083',
+    'https://www.icloud.com/sharedalbum/#B1z59UlCqrHT7vf;FE5A2DD5-745B-4060-9976-088C05255F3B',
+    'https://www.icloud.com/sharedalbum/#B1zGrq0zwqrpHfU;B99281AA-6230-49E6-A36D-2562F408E6E3',
     'https://uva.theopenscholar.com/abebayehu-lab',
     
     "https://duckduckgo.com/?q=weather+in+plum+pa&atb=v481-1&ia=web",
-    "https://wttr.in/Pittsburgh,PA",
-    "https://www.icloud.com/sharedalbum/#B1zG4TcsmqOoZFQ"
+
     
   ];
-  const delayMs = 5000; // 30 seconds
+  const delayMs = 30000; // 30 seconds
 
   function redirectRandom() {
     const choice = urls[Math.floor(Math.random() * urls.length)];
