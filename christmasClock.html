@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festive Pittsburgh Weather & Clock</title>
+    <style>
+        /* Imported Christmas Font */
+        @import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Mountains of Christmas', cursive;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            --s: 75px; /* control the size */
+            --_c: #0000, #fff 1deg 79deg, #0000 81deg;
+            --g0: conic-gradient(from 140deg at 50% 87.5%, var(--_c));
+            --g1: conic-gradient(from 140deg at 50% 81.25%, var(--_c));
+            --g2: conic-gradient(from 140deg at 50% 75%, var(--_c));
+            --g3: conic-gradient(at 10% 20%, #0000 75%, #fff 0);
+            background: var(--g0) 0 calc(var(--s) / -4),
+                var(--g0) var(--s) calc(3 * var(--s) / 4), var(--g1),
+                var(--g1) var(--s) var(--s), var(--g2) 0 calc(var(--s) / 4),
+                var(--g2) var(--s) calc(5 * var(--s) / 4),
+                var(--g3) calc(var(--s) / -10) var(--s),
+                var(--g3) calc(9 * var(--s) / 10) calc(2 * var(--s)),
+                repeating-conic-gradient(from 45deg, #a31e39 0 25%, #31570e 0 50%);
+            background-size: calc(2 * var(--s)) calc(2 * var(--s));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+
+.christmas-clock {
+    font-size: 8rem;
+    color: #FFFF00;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+    margin-bottom: 20px;
+
+    /* New festive card styling */
+    background-color: rgba(139, 0, 0, 0.7); /* Deep red with transparency */
+    border-radius: 15px;
+    padding: 20px;
+    border: 3px solid gold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    display: inline-block;
+    max-width: 100%;
+    text-align: center;
+}
+
+.weather-display {
+    font-size: 4rem;
+    color: #FFFF00;  /* christmas gold */
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+
+    /* New festive card styling */
+    background-color: rgba(34, 139, 34, 0.7); /* Forest green with transparency */
+    border-radius: 15px;
+    padding: 20px;
+    border: 3px solid gold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    display: inline-block;
+    max-width: 100%;
+    text-align: center;
+}
+
+        .loader-wrap {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .container-loader {
+            --size: 300px;
+            width: var(--size);
+            height: var(--size);
+            position: relative;
+            zoom: 0.5;
+            transform: translateX(-50%);
+        }
+
+               .ball {
+            position: absolute;
+            width: calc(var(--size) + var(--i));
+            height: calc(var(--size) + var(--i));
+            background-color: var(--color);
+            border-radius: 50%;
+            animation: move 5s linear infinite;
+            transform-origin: var(--size);
+            mix-blend-mode: hard-light;
+            animation-duration: var(--d);
+            filter: blur(58px);
+        }
+
+        .ball:nth-child(even) {
+            animation-direction: reverse;
+        }
+
+        @keyframes move {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(359deg);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="christmas-clock" id="christmas-clock">Loading...</div>
+    <div class="weather-display" id="weather-display">Fetching weather...</div>
+</div>
+
+<!--<div class="loader-wrap">-->
+<!--    <aside class="container-loader">-->
+<!--        <article style="&#45;&#45;color: #ff6347; &#45;&#45;i: 12px; &#45;&#45;d: 3.4s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #00ced1; &#45;&#45;i: 18px; &#45;&#45;d: 6.1s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #adff2f; &#45;&#45;i: 10px; &#45;&#45;d: 2.9s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #9370db; &#45;&#45;i: 16px; &#45;&#45;d: 7.8s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #ff1493; &#45;&#45;i: 14px; &#45;&#45;d: 4.6s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #00bfff; &#45;&#45;i: 11px; &#45;&#45;d: 3.3s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #7fff00; &#45;&#45;i: 17px; &#45;&#45;d: 5.5s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #dc143c; &#45;&#45;i: 13px; &#45;&#45;d: 6.7s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #8a2be2; &#45;&#45;i: 19px; &#45;&#45;d: 8.2s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #48d1cc; &#45;&#45;i: 15px; &#45;&#45;d: 9.1s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #ff4500; &#45;&#45;i: 14px; &#45;&#45;d: 4.2s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #00ff7f; &#45;&#45;i: 16px; &#45;&#45;d: 5.8s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #ba55d3; &#45;&#45;i: 10px; &#45;&#45;d: 7.3s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #1e90ff; &#45;&#45;i: 18px; &#45;&#45;d: 6.4s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #ffa500; &#45;&#45;i: 20px; &#45;&#45;d: 10s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #ff69b4; &#45;&#45;i: 12px; &#45;&#45;d: 3.7s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #00fa9a; &#45;&#45;i: 11px; &#45;&#45;d: 2.6s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #9400d3; &#45;&#45;i: 17px; &#45;&#45;d: 6.9s" class="ball"></article>-->
+<!--        <article style="&#45;&#45;color: #ffb6c1; &#45;&#45;i: 13px; &#45;&#45;d: 5.3s" class="ball"></article>-->
+<!--        style="&#45;&#45;color: #20b2aa; &#45;&#45;i: 19px; &#45;&#45;d: 7.7s" class="ball"></article>-->
+<!--    </aside>-->
+<!--</div>-->
+
+<script>
+    // Festive Clock Function
+    function updateChristmasClock() {
+        const clockElement = document.getElementById('christmas-clock');
+        const now = new Date();
+        const options = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        };
+        const timeString = now.toLocaleTimeString([], options);
+        clockElement.innerHTML = `🎄 ${timeString} 🎄`;
+    }
+
+   async function fetchPittsburghWeather() {
+    const weatherElement = document.getElementById('weather-display');
+
+    try {
+        // wttr.in provides weather data without an API key
+        const response = await fetch('https://wttr.in/Pittsburgh?u&format=%t+%f+%c');
+
+        if (!response.ok) {
+            throw new Error('Weather data not available');
+        }
+
+        const weatherText = await response.text();
+
+        // Parsing the wttr.in response (typically in format: "32°F 28°F ☁️")
+        const [temperature, feelsLike, conditions] = weatherText.split(' ');
+
+        weatherElement.innerHTML = `
+            ❄️ Pittsburgh Weather 🌨️<br>
+            Temperature: ${temperature}<br>
+            Feels Like: ${feelsLike}<br>
+            Conditions: ${conditions}
+        `;
+    } catch (error) {
+        weatherElement.innerHTML = `
+            ❄️ Unable to fetch weather 🌨️<br>
+            ${error.message}
+        `;
+        console.error('Weather fetch error:', error);
+    }
+}
+
+    // Add some Christmas spirit with snowfall effect
+    function createSnowfall() {
+        const snowContainer = document.createElement('div');
+        snowContainer.style.position = 'fixed';
+        snowContainer.style.top = '0';
+        snowContainer.style.left = '0';
+        snowContainer.style.width = '100%';
+        snowContainer.style.height = '100%';
+        snowContainer.style.pointerEvents = 'none';
+        snowContainer.style.zIndex = '9998';
+        document.body.appendChild(snowContainer);
+
+        for (let i = 0; i < 100; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.style.position = 'absolute';
+            snowflake.style.color = 'white';
+            snowflake.style.fontSize = `${Math.random() * 10 + 5}px`;
+            snowflake.style.left = `${Math.random() * 100}%`;
+            snowflake.style.animationDuration = `${Math.random() * 10 + 10}s`;
+            snowflake.style.animationDelay = `${Math.random() * 10}s`;
+            snowflake.style.opacity = `${Math.random()}`;
+            snowflake.style.animation = 'fall linear infinite';
+            snowflake.innerHTML = '❄️';
+            snowContainer.appendChild(snowflake);
+        }
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fall {
+                to {
+                    transform: translateY(100vh) rotate(360deg);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // Initialize functions when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        // Update clock every second
+        setInterval(updateChristmasClock, 1000);
+
+                // Continued from previous script
+            fetchPittsburghWeather();
+
+            // Create snowfall effect
+            createSnowfall();
+        });
+
+        // Optional: Refresh weather periodically
+        setInterval(fetchPittsburghWeather, 600000); // Every 10 minutes
+</script>
+
+<!-- Optional: Add Christmas music autoplay -->
+<audio id="christmas-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<script>
+    // Optional Music Control
+    document.addEventListener('DOMContentLoaded', () => {
+        const music = document.getElementById('christmas-music');
+
+        // Add play/pause button
+        const musicButton = document.createElement('button');
+        musicButton.innerHTML = '🎵 Toggle Music';
+        musicButton.style.position = 'fixed';
+        musicButton.style.bottom = '20px';
+        musicButton.style.right = '20px';
+        musicButton.style.zIndex = '10000';
+        musicButton.style.padding = '10px';
+        musicButton.style.backgroundColor = '#C41E3A';
+        musicButton.style.color = 'white';
+        musicButton.style.border = 'none';
+        musicButton.style.borderRadius = '5px';
+        musicButton.style.cursor = 'pointer';
+
+        musicButton.addEventListener('click', () => {
+            if (music.paused) {
+                music.play();
+                musicButton.innerHTML = '🎵 Pause Music';
+            } else {
+                music.pause();
+                musicButton.innerHTML = '🎵 Play Music';
+            }
+        });
+
+        document.body.appendChild(musicButton);
+    });
+</script>
+</body>
+</html>
+
+
+
