@@ -12,9 +12,14 @@
     "https://www.icloud.com/sharedalbum/#B1zGrq0zwqrpHfU;C4BB296F-AA12-441D-BCA5-917636068EBA", //Digital repo part II
     "https://www.icloud.com/sharedalbum/#B1zGqkRUiqraMoC;42AB7D37-9CF3-4476-BF69-819F47768A49", //Boston Trip
     "https://www.icloud.com/sharedalbum/#B1z5ON9t3rYEe9K;E72C81DD-B9DC-41B9-B8AF-F45E1496C4E0", //lake trip
-    "https://www.icloud.com/sharedalbum/#B1zJ0DiRHPTdtH7;433CC241-1FCC-4D87-B23F-E338FA2CB231", // ohiopile
+    
     "https://www.icloud.com/sharedalbum/#B1zG4TcsmqOoZFQ;ADF0FA87-0483-4D40-B13C-9E927DF1E440", //DGR1
     "https://www.icloud.com/sharedalbum/#B1x5M7GFPJRnk4P;90AAD6BE-1D1E-4C7A-BC93-E086E71588F2", //WHO
+    "https://www.icloud.com/sharedalbum/#B1z5qXGF1r4LPMn;64CA806E-65A0-4065-9559-29733E1F7F27", //end family thanksgiving part II
+    "https://www.icloud.com/sharedalbum/#B1z5nhQSTrRUltf;BDD03EA0-7FC7-4864-A069-59D7E510F299", //bidges baptims
+    "https://www.icloud.com/sharedalbum/#B1zGWZuqDqPg0LW;8DE426BD-C27F-462C-ABB2-B3F015D6AC4D", //the gang attempts a family vacation
+    "https://www.icloud.com/sharedalbum/#B1zGY8gBYq8xewJ;7E00DE24-A3E6-4488-98AD-FA74F7DDC71E", // bidges adoption zacgs version
+    "https://beanminchild.github.io/FireFotoFrame/christmasClock"
 
 
 
