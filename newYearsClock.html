@@ -1,0 +1,330 @@
+// ...existing code...
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>New Year's Pittsburgh Weather & Countdown</title>
+    <style>
+        /* New Year's Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;600&display=swap');
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(ellipse at top, #0b1220 0%, #03040a 40%), linear-gradient(180deg, rgba(255,215,0,0.02), rgba(0,0,0,0.6));
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* star field */
+        .stars {
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.9)),
+                radial-gradient(1px 1px at 40% 60%, rgba(255,255,255,0.8)),
+                radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.7));
+            background-repeat: repeat;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            text-align: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .newyear-clock {
+            font-family: 'Bebas Neue', cursive;
+            font-size: clamp(2.5rem, 8vw, 7rem);
+            color: gold;
+            text-shadow: 0 6px 14px rgba(255, 215, 0, 0.08), 0 2px 6px rgba(0,0,0,0.7);
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,215,0,0.03));
+            padding: 18px 28px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,215,0,0.25);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+            display: inline-block;
+        }
+
+        .subline {
+            font-size: clamp(1rem, 2.4vw, 2rem);
+            color: #ffd165;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        .weather-display {
+            font-size: clamp(1rem, 2vw, 1.6rem);
+            color: #fff;
+            background: rgba(255,255,255,0.03);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
+            display: inline-block;
+        }
+
+        /* confetti */
+        .confetti {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 8;
+            overflow: hidden;
+        }
+        .confetti > i {
+            position: absolute;
+            width: 10px;
+            height: 16px;
+            transform-origin: center;
+            opacity: 0.95;
+            top: -10%;
+            animation: confetti-fall linear infinite;
+        }
+        @keyframes confetti-fall {
+            to { transform: translateY(120vh) rotate(720deg); }
+        }
+
+        /* fireworks canvas */
+        canvas#fwCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 9;
+            pointer-events: none;
+        }
+
+        /* music button */
+        .music-btn {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 10;
+            background: rgba(255,215,0,0.12);
+            color: #fff;
+            border: 1px solid rgba(255,215,0,0.18);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+
+        /* celebration banner when midnight hits */
+        .celebrate {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: linear-gradient(90deg, rgba(255,215,0,0.08), rgba(255,255,255,0.03));
+            color: gold;
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,215,0,0.25);
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            z-index: 11;
+            display: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" aria-hidden="true"></div>
+
+    <div class="container">
+        <div class="newyear-clock" id="newyear-clock">
+            Loading...
+        </div>
+        <div class="subline" id="countdown-sub">Countdown to the New Year</div>
+        <div class="weather-display" id="weather-display">Fetching Pittsburgh weather...</div>
+    </div>
+
+    <div class="confetti" id="confetti"></div>
+    <canvas id="fwCanvas" width="800" height="600" aria-hidden="true"></canvas>
+    <div class="celebrate" id="celebrate">HAPPY NEW YEAR 🎆</div>
+
+    <audio id="celebration-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <button class="music-btn" id="music-btn">🎵 Play Music</button>
+
+<script>
+    // Update time and countdown to next Jan 1
+    function updateNewYearClock() {
+        const el = document.getElementById('newyear-clock');
+        const sub = document.getElementById('countdown-sub');
+        const now = new Date();
+        // next year Jan 1 at midnight
+        const target = new Date(now.getFullYear() + 1, 0, 1, 0, 0, 0);
+        const diff = target - now;
+
+        // current local time
+        const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true});
+        // countdown parts
+        if (diff > 0) {
+            const secs = Math.floor(diff / 1000);
+            const days = Math.floor(secs / 86400);
+            const hours = Math.floor((secs % 86400) / 3600);
+            const minutes = Math.floor((secs % 3600) / 60);
+            const seconds = secs % 60;
+            el.innerHTML = `${timeString}`;
+            sub.innerHTML = `Time until ${target.getFullYear()}: ${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+        } else {
+            // it's New Year!
+            el.innerHTML = `🎉 ${target.getFullYear()} 🎉`;
+            sub.innerHTML = `Happy New Year!`;
+            triggerCelebration();
+        }
+    }
+
+    function pad(v){ return String(v).padStart(2, '0'); }
+
+    // Weather fetch (wttr.in)
+    async function fetchPittsburghWeather() {
+        const weatherElement = document.getElementById('weather-display');
+        try {
+            const response = await fetch('https://wttr.in/Pittsburgh?u&format=%t+%f+%c');
+            if (!response.ok) throw new Error('Weather data not available');
+            const weatherText = await response.text();
+            const parts = weatherText.trim().split(/\s+/);
+            const [temperature, feelsLike, ...condParts] = parts;
+            const conditions = condParts.join(' ') || '—';
+            weatherElement.innerHTML = `Pittsburgh • ${temperature} • feels like ${feelsLike} • ${conditions}`;
+        } catch (err) {
+            weatherElement.textContent = 'Unable to fetch weather';
+            console.error(err);
+        }
+    }
+
+    // Confetti generator (subtle falling shapes)
+    function createConfetti(count = 120) {
+        const container = document.getElementById('confetti');
+        const colors = ['#ffd700','#ff6b6b','#6bffb8','#66b3ff','#d86bff','#fff36b'];
+        for (let i=0;i<count;i++){
+            const node = document.createElement('i');
+            const w = Math.random()*10 + 6;
+            node.style.width = `${w}px`;
+            node.style.height = `${Math.random()*14 + 8}px`;
+            node.style.left = `${Math.random()*100}%`;
+            node.style.background = colors[Math.floor(Math.random()*colors.length)];
+            node.style.opacity = String(0.8 + Math.random()*0.2);
+            const dur = (6 + Math.random()*6).toFixed(2) + 's';
+            const delay = (Math.random()*4).toFixed(2) + 's';
+            node.style.animationDuration = dur;
+            node.style.animationDelay = delay;
+            node.style.transform = `rotate(${Math.random()*360}deg)`;
+            container.appendChild(node);
+        }
+    }
+
+    // Simple fireworks canvas (particle bursts)
+    (function fireworksModule(){
+        const canvas = document.getElementById('fwCanvas');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+
+        const particles = [];
+
+        function spawnFirework(x,y){
+            const hue = Math.random()*360;
+            const count = 28 + Math.floor(Math.random()*36);
+            for (let i=0;i<count;i++){
+                particles.push({
+                    x, y,
+                    vx: (Math.random()-0.5)*6,
+                    vy: (Math.random()-0.5)*6,
+                    life: 60 + Math.floor(Math.random()*60),
+                    color: `hsl(${hue + Math.random()*40 - 20}, 100%, ${50 + Math.random()*20}%)`,
+                    alpha: 1
+                });
+            }
+        }
+
+        function loop(){
+            ctx.clearRect(0,0,W,H);
+            for (let i = particles.length-1; i>=0; i--){
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.08; // gravity
+                p.life--;
+                p.alpha = Math.max(0, p.life / 120);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.fillRect(p.x, p.y, 3, 3);
+                if (p.life <= 0) particles.splice(i,1);
+            }
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(loop);
+        }
+        // schedule occasional bursts
+        setInterval(() => {
+            const x = 100 + Math.random()*(W-200);
+            const y = 100 + Math.random()*(H/2);
+            spawnFirework(x,y);
+        }, 1200);
+
+        // exposed trigger
+        window.triggerFirework = (x,y) => spawnFirework(x || W/2, y || H/3);
+
+        loop();
+    })();
+
+    // when countdown hits zero
+    let celebrated = false;
+    function triggerCelebration(){
+        if (celebrated) return;
+        celebrated = true;
+        document.getElementById('celebrate').style.display = 'block';
+        // generate more confetti
+        createConfetti(240);
+        // big fireworks burst across screen
+        for (let i=0;i<8;i++){
+            setTimeout(() => window.triggerFirework(150 + Math.random()*(window.innerWidth-300), 80 + Math.random()*200), i*300);
+        }
+        // autoplay music (if allowed)
+        const music = document.getElementById('celebration-music');
+        music.play().catch(()=>{}); // ignore autoplay rejection
+        document.getElementById('music-btn').textContent = '🎵 Pause Music';
+    }
+
+    // music button
+    document.getElementById('music-btn').addEventListener('click', () => {
+        const music = document.getElementById('celebration-music');
+        const btn = document.getElementById('music-btn');
+        if (music.paused) {
+            music.play().catch(()=>{});
+            btn.textContent = '🎵 Pause Music';
+        } else {
+            music.pause();
+            btn.textContent = '🎵 Play Music';
+        }
+    });
+
+    // initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        updateNewYearClock();
+        setInterval(updateNewYearClock, 1000);
+        fetchPittsburghWeather();
+        setInterval(fetchPittsburghWeather, 600000);
+        createConfetti(80);
+    });
+</script>
+</body>
+</html>
+// ...existing code...
