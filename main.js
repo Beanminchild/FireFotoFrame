@@ -32,7 +32,7 @@
 
     
   ];
-  const delayMs = 30000; // 30 seconds
+  const delayMs = 10000; // 30 seconds
 
   function redirectRandom() {
     const choice = urls[Math.floor(Math.random() * urls.length)];
