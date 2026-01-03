@@ -98,7 +98,7 @@
 .loading-text {
   margin: 0;
   text-align: center;
-  font-size: clamp(0.9rem, 2.2vh, 1.25rem);
+  font-size: clamp(1.9rem, 3.2vh, 2.25rem);
   line-height: 1;
   user-select: none;
   padding-top: 420px;
