@@ -66,12 +66,42 @@
         font-size: clamp(3rem, 6.4vw, 3.4rem);
         color: rgba(255,255,255,0.9);
         text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-        padding: 70px;
+        padding-top: 200px;
 
     }
 
 /* From Uiverse.io by isfan4ik */
 .loader {
+}
+
+
+
+/* center page and keep loader+text grouped */
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* column that holds the text and loader; gap scales with viewport */
+.loader-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 2vh, 24px); /* keeps the text slightly above the loader on all screens */
+}
+
+/* small responsive text adjustments */
+.loading-text {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(0.9rem, 2.2vh, 1.25rem);
+  line-height: 1;
+  user-select: none;
+  padding-top: 420px;
 }
 
 .coffee-container {
