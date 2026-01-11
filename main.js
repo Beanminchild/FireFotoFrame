@@ -6,7 +6,7 @@
     "https://duckduckgo.com/?q=weather+in+plum+pa&atb=v481-1&ia=web",
     "https://www.icloud.com/sharedalbum/#B1z53qWtHqA2mdx;838712E6-32BA-4E77-8DDD-788F7B8DCC6E", //DGR3
     "https://www.icloud.com/sharedalbum/#B1z53qWtHqA2mdx;8C2DB22B-831E-49C3-9D4B-EDD717193EE4", //DGR3
-    "https://www.icloud.com/sharedalbum/#B1z59UlCqrHT7vf;155BA3C5-80F4-4208-9BF8-927FFC284689", //CCR
+    "https://www.icloud.com/sharedalbum/#B1z59UlCqrHT7vf;0472E485-6C85-43C0-8942-99ACEFC52819", //CCR
     "https://www.icloud.com/sharedalbum/#B2HG4TcsmGRbn4W;1759FBD5-37FD-4436-9497-B5F516BFB245", //bestofgorlie
     "https://www.icloud.com/sharedalbum/#B1zGfnH8tqM1vul;85F12A9F-94FC-4BFD-B970-DF4174D986B1", //Deepcreek2025
     "https://www.icloud.com/sharedalbum/#B1zGrq0zwqrpHfU;C4BB296F-AA12-441D-BCA5-917636068EBA", //Digital repo part II
