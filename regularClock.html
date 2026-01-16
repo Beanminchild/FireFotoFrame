@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,245 +5,357 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Pittsburgh Weather & Clock</title>
     <style>
-    /* New Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Inter:wght@300;600&display=swap');
 
-    html, body {
-        height: 100%;
-        margin: 0;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        color: #fff;
-        overflow: hidden;
-        background: #000; /* fallback while container provides decorative background */
-    }
-
-    /* subtle star overlay so background doesn't look flat */
-    .stars {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background-image:
-            radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.06)),
-            radial-gradient(1px 1px at 40% 60%, rgba(255,255,255,0.05)),
-            radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.04));
-        background-repeat: repeat;
-        opacity: 0.7;
-    }
-
-    .container {
-        /* Uiverse conic background + variables */
-        width: 100%;
-        height: 100%;
-        --s: 160px; /* tile size */
-        --c1: #ff847c;
-        --c2: #e84a5f;
-        --c3: #fecea8;
-        --c4: #99b898;
-
-        background: conic-gradient(
-                from 45deg at 75% 75%,
-                var(--c3) 90deg,
-                var(--c1) 0 180deg,
-                #0000 0
-            ),
-            conic-gradient(from -45deg at 25% 25%, var(--c3) 90deg, #0000 0),
-            conic-gradient(from -45deg at 50% 100%, #0000 180deg, var(--c3) 0),
-            conic-gradient(
-                from -45deg,
-                var(--c1) 90deg,
-                var(--c2) 0 225deg,
-                var(--c4) 0
-            );
-        background-size: var(--s) var(--s);
-
-        position: relative;
-        z-index: 5;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-        text-align: center;
-        padding: 2rem;
-        box-sizing: border-box;
-    }
-
-    /* main clock */
-    .main-clock {
-        font-family: 'Bebas Neue', cursive;
-        font-size: clamp(3rem, 8vw, 7rem);
-        color: #fff;
-        text-shadow: 0 6px 18px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.5);
-        //background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));
-        border-left: 6px solid rgba(255,255,255,0.06);
-        padding: 20px 34px;
-        border-radius: 18px;
-        //box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 2px 0 rgba(255,255,255,0.02) inset;
-        display: inline-block;
-    }
-
-    .subline {
-        font-size: clamp(1rem, 2.4vw, 1.4rem);
-        color: rgba(255,255,255,0.9);
-        text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    }
-
-     .proline {
-        font-family: 'Bebas Neue', cursive;
-        font-size: clamp(3rem, 8vw, 7rem);
-        color: #fff;
-        text-shadow: 0 6px 18px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.5);
-        //background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));
-        border-left: 6px solid rgba(255,255,255,0.06);
-        padding: 20px 34px;
-        border-radius: 18px;
-        //box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 2px 0 rgba(255,255,255,0.02) inset;
-        display: inline-block;
-    }
-
-    .weather-display {
-        font-size: clamp(1rem, 2vw, 1.6rem);
-        color: #fff;
-        background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));
-        padding: 16px 20px;
-        border-radius: 18px;
-        border: 1px solid rgba(0,0,0,0.25);
-        //box-shadow: 0 6px 20px rgba(0,0,0,0.45);
-        display: inline-block;
-        min-width: 300px;
-        max-width: 720px;
-        text-align: left;
-    }
-
-    .weather-main {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .weather-main img {
-        width: 64px;
-        height: 64px;
-        object-fit: contain;
-        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
-    }
-    .weather-temp {
-        font-size: 1.6rem;
-        font-weight: 600;
-        color: white
-    }
-    .weather-details {
-        margin-top: 8px;
-        color: rgba(255,255,255,0.95);
-        font-size: 0.95rem;
-        opacity: 0.95;
-    }
-    .muted { color: rgba(255,255,255,0.7); font-weight: 400; }
-
-    /* Portrait / vertical displays: make clock & weather larger and stacked */
-    @media (orientation: portrait) {
-        .main-clock {
-            font-size: clamp(5rem, 18vw, 12rem);
-            padding: 28px 44px;
+        :root{
+            --ac-bg: #f3ebd7;         /* soft paper */
+            --ac-panel: #fffdf3;      /* card background */
+            --ac-accent: #4ba53a;     /* leaf green */
+            --ac-accent-dark: #2f7b28;
+            --ac-brown: #8a5a36;
+            --ac-muted: rgba(0,0,0,0.55);
+            --card-radius: 18px;
         }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #222;
+            background: radial-gradient(circle at 10% 10%, #dff0d8 0%, transparent 25%), var(--ac-bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.06)),
+                radial-gradient(1px 1px at 40% 60%, rgba(255,255,255,0.05)),
+                radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.04));
+            background-repeat: repeat;
+            opacity: 0.6;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            text-align: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+
+        /* Wood card styles (add into existing <style> in `regularClock.html`) */
+.wood-card {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 14px;
+    position: relative;
+    background: linear-gradient(180deg, #cfa878 0%, #b07a44 40%, #8b5a2b 100%); /* wood base */
+    box-shadow:
+      inset 0 10px 18px rgba(255,255,255,0.06),    /* top highlight */
+      inset 0 -8px 22px rgba(0,0,0,0.14),          /* bottom depth */
+      0 8px 24px rgba(0,0,0,0.18);                 /* outer shadow */
+    border: 3px solid rgba(0,0,0,0.06);
+    border-bottom-width: 5px;
+    z-index: 3;
+}
+
+/* subtle wood grain using repeating linear gradient overlay */
+.wood-card::before{
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+    background:
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,0.06) 0 2px,
+        rgba(255,255,255,0.02) 2px 6px),
+      linear-gradient(90deg, rgba(0,0,0,0.02), transparent 40%),
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.04));
+    transform: rotate(-4deg) scaleX(1.02); /* slightly diagonal grain */
+}
+
+/* optional knots / ring accents */
+.wood-card::after{
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    right: 8%;
+    top: 18%;
+    width: 28%;
+    height: 60%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side,
+        rgba(0,0,0,0.08) 0%,
+        rgba(0,0,0,0.02) 55%,
+        transparent 60%);
+    opacity: 0.18;
+    transform: rotate(-8deg);
+}
+
+/* keep the subline styling but adjust colors for contrast on wood */
+.wood-card .subline {
+    margin: 0;
+    padding: 6px 0;
+    color: #fffdf3; /* light paper look on wood */
+    text-shadow: 0 4px 0 rgba(0,0,0,0.18);
+    display: inline-block;
+    background: transparent; /* ensure no card background overrides */
+}
+
+
+        /* Animal Crossing style title/subline */
         .subline {
-            font-size: clamp(1.4rem, 5vw, 2.2rem);
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(1rem, 2.4vw, 1.4rem);
+            color: var(--ac-brown);
+            text-shadow: 0 6px 0 rgba(255,255,255,0.6);
+            letter-spacing: 0.6px;
         }
+
+        /* Clock card styled like AC item card */
+        .main-clock, .proline {
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(3rem, 8vw, 7rem);
+            color: var(--ac-brown);
+            background: linear-gradient(180deg, var(--ac-panel), #f7f3e8);
+            border-radius: calc(var(--card-radius) + 6px);
+            padding: 18px 28px;
+            display: inline-block;
+            box-shadow:
+                0 10px 0 rgba(255,255,255,0.6) inset,
+                0 8px 18px rgba(0,0,0,0.12),
+                0 2px 0 rgba(0,0,0,0.04) inset;
+            border: 4px solid rgba(138,90,54,0.06);
+            position: relative;
+            min-width: 240px;
+        }
+
+        /* little stitched label top-left like AC tags */
+        .main-clock::before {
+            content: "Time";
+            position: absolute;
+            left: -8px;
+            top: -18px;
+            background: var(--ac-accent);
+            color: white;
+            font-family: 'Baloo 2', cursive;
+            font-size: 0.9rem;
+            padding: 6px 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            transform: rotate(-6deg);
+            border: 2px solid rgba(255,255,255,0.12);
+        }
+
+        /* Weather card with AC friendly styling */
         .weather-display {
-            font-size: clamp(1.3rem, 5vw, 2.2rem);
-            padding: 22px 26px;
-            max-width: 94vw;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--ac-brown);
+            background: linear-gradient(180deg, #fffef6, #fbf8ef);
+            padding: 18px 20px;
+            border-radius: var(--card-radius);
+            border: 3px solid rgba(138,90,54,0.06);
+            display: inline-block;
+            min-width: 300px;
+            max-width: 720px;
+            text-align: left;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+            position: relative;
+        }
+
+
+
+    .wood-card .pop-tag{
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: var(--ac-accent);
+    color: white;
+    padding: 6px 10px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    transform: rotate(6deg);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    border: 2px solid rgba(255,255,255,0.08);
+    z-index: 6;
+    white-space: nowrap;
+    text-transform: capitalize;
+}
+
+/* small layout tweak for very small screens */
+@media (max-width: 420px){
+    .wood-card .pop-tag{
+        top: -10px;
+        right: -8px;
+        font-size: 0.8rem;
+        padding: 5px 8px;
+    }
+}
+
+        .weather-display::after{
+            content: "Nook's Weather";
+            position: absolute;
+            right: 10px;
+            top: -12px;
+            background: var(--ac-accent-dark);
+            color: white;
+            padding: 6px 10px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            transform: rotate(6deg);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
         .weather-main img {
-            width: 92px;
-            height: 92px;
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #fff, #f1f1f1);
+            border: 2px solid rgba(138,90,54,0.04);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.06);
         }
-        .weather-temp { font-size: 2rem; }
-    }
+        .weather-temp {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--ac-brown);
+            font-family: 'Baloo 2', cursive;
+        }
+        .weather-details {
+            margin-top: 10px;
+            color: var(--ac-muted);
+            font-size: 0.95rem;
+        }
+        .muted { color: rgba(0,0,0,0.5); font-weight: 500; }
 
+        /* Skip / quick link buttons with AC style */
+        .skip-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 18px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+        }
 
+        .skip-button {
+            background: linear-gradient(180deg, #fffef6, #f3ead0);
+            color: var(--ac-accent-dark);
+            padding: 12px 22px;
+            border-radius: 14px;
+            border: 3px solid rgba(138,90,54,0.08);
+            text-decoration: none;
+            font-family: 'Baloo 2', cursive;
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 150px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+            transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+            position: relative;
+        }
 
+        .skip-button::before{
+            content: "🍃";
+            margin-right: 8px;
+            transform: translateY(1px);
+            filter: drop-shadow(0 2px 0 rgba(0,0,0,0.06));
+        }
 
-/* add these rules into the existing <style> block */
-.skip-buttons {
-    display: flex;
-    gap: 16px;
-    margin-top: 18px;
-    justify-content: center;
-    flex-wrap: wrap;
-    align-items: center;
-}
+        .skip-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.16);
+        }
 
-.skip-button {
-    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));
-    color: #fff;
-    padding: 16px 28px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.08);
-    text-decoration: none;
-    font-family: 'Bebas Neue', cursive;
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 160px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.45);
-    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-}
+        .skip-button:active,
+        .skip-button:focus {
+            transform: translateY(1px) scale(0.995);
+            outline: none;
+        }
 
-.skip-button:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 22px rgba(0,0,0,0.55);
-}
+        /* Portrait tweaks */
+        @media (orientation: portrait) {
+            .main-clock {
+                font-size: clamp(5rem, 18vw, 12rem);
+                padding: 28px 44px;
 
-.skip-button:active,
-.skip-button:focus {
-    transform: translateY(1px) scale(0.995);
-    outline: none;
-}
+            }
+            .subline {
+                font-size: clamp(1.4rem, 5vw, 2.2rem);
+            }
+            .weather-display {
+                font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+                padding: 22px 26px;
+                max-width: 94vw;
+            }
+            .weather-main img {
+                width: 92px;
+                height: 92px;
+            }
+            .weather-temp { font-size: 2rem; }
+            .skip-button {
+                padding: 16px 26px;
+                font-size: clamp(1.2rem, 5vw, 1.8rem);
+                min-width: 180px;
+            }
+        }
 
-/* Slightly larger buttons on portrait / mobile */
-@media (orientation: portrait) {
-    .skip-button {
-        padding: 20px 36px;
-        font-size: clamp(1.4rem, 5vw, 2.2rem);
-        min-width: 200px;
-    }
-}
+        /* small accessible tweaks */
+        .main-clock, .weather-display { line-height: 1; }
     </style>
-
-
 </head>
 <body>
-    <div class="stars" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"></div>
 
-    <div class="container">
-        <div class="subline">  Here we go Steelers! </div>
+<div class="container">
+    <div class="wood-card">
 
-        <div class="main-clock" id="clock">
-            Loading...
-        </div>
-        <div class="subline" id="clock-sub">Local time and date</div>
+        <div class="pop-tag" role="status" aria-label="Population Growing">population Growing</div>
 
-        <div class="weather-display"  id="weather-display" aria-live="polite" aria-atomic="true">
-
-            Fetching Pittsburgh weather...
-
-        </div>
-        <div class="skip-buttons" role="group" aria-label="Quick links">
-            <a class="skip-button" href="https://duckduckgo.com/?q=weather+in+plum+pa&atb=v481-1&ia=web"  rel="noopener noreferrer" aria-label="Open Weather on YouTube">More Weather</a>
-            <a class="skip-button" href="https://www.icloud.com/sharedalbum/#B2HG4TcsmGRbn4W;1759FBD5-37FD-4436-9497-B5F516BFB245"  rel="noopener noreferrer" aria-label="Open Photos on YouTube">Show Photos</a>
-        </div>
+        <div class="subline">Welcome to the End Family Home!</div>
     </div>
 
+    <div class="main-clock" id="clock">
+        Loading...
+    </div>
+    <div class="subline" id="clock-sub">Local time and date</div>
 
+    <div class="weather-display" id="weather-display" aria-live="polite" aria-atomic="true">
+        Fetching Pittsburgh weather...
+    </div>
 
-
+    <div class="skip-buttons" role="group" aria-label="Quick links">
+        <a class="skip-button" href="https://duckduckgo.com/?q=weather+in+plum+pa&atb=v481-1&ia=web"  rel="noopener noreferrer" aria-label="More Weather">More Weather</a>
+        <a class="skip-button" href="https://www.icloud.com/sharedalbum/#B2HG4TcsmGRbn4W;1759FBD5-37FD-4436-9497-B5F516BFB245"  rel="noopener noreferrer" aria-label="Show Photos">Show Photos</a>
+    </div>
+</div>
 
 <script>
-    // Update local time and date
     function updateClock() {
         const el = document.getElementById('clock');
         const sub = document.getElementById('clock-sub');
@@ -256,7 +367,6 @@
         sub.textContent = `${dateString} ${tz ? `• ${tz}` : ''}`;
     }
 
-    // Weather fetch (wttr.in JSON)
     async function fetchPittsburghWeather() {
         const weatherElement = document.getElementById('weather-display');
         try {
@@ -264,9 +374,8 @@
             if (!response.ok) throw new Error('Weather data not available');
             const data = await response.json();
             const cur = (data && data.current_condition && data.current_condition[0]) || {};
-            const tempF = cur.temp_F || cur.temp_C ? `${cur.temp_F || ''}` : '—';
-            const tempC = cur.temp_C || '—';
-            const feelsF = cur.FeelsLikeF || cur.FeelsLikeC || '—';
+            const tempDisplay = cur.temp_F ? `${cur.temp_F}°F (${cur.temp_C}°C)` : `${cur.temp_C}°C`;
+            const feelsDisplay = cur.FeelsLikeF ? `${cur.FeelsLikeF}°F (${cur.FeelsLikeC}°C)` : `${cur.FeelsLikeC}°C`;
             const desc = (cur.weatherDesc && cur.weatherDesc[0] && cur.weatherDesc[0].value) || '—';
             const humidity = cur.humidity || '—';
             const windKmph = cur.windspeedKmph || '—';
@@ -276,10 +385,6 @@
             const visibility = cur.visibility || '—';
             const uv = cur.uvIndex || '—';
             const icon = (cur.weatherIconUrl && cur.weatherIconUrl[0] && cur.weatherIconUrl[0].value) || '';
-
-            // Prefer showing Fahrenheit when available
-            const tempDisplay = cur.temp_F ? `${cur.temp_F}°F (${cur.temp_C}°C)` : `${cur.temp_C}°C`;
-            const feelsDisplay = cur.FeelsLikeF ? `${cur.FeelsLikeF}°F (${cur.FeelsLikeC}°C)` : `${cur.FeelsLikeC}°C`;
 
             weatherElement.innerHTML = `
                 <div class="weather-main">
@@ -300,62 +405,59 @@
         }
     }
 
- // Add some Christmas spirit with snowfall effect
     function createSnowfall() {
-    const snowContainer = document.createElement('div');
-    Object.assign(snowContainer.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-        zIndex: '9998',
-        overflow: 'hidden'
-    });
-    document.body.appendChild(snowContainer);
-
-    for (let i = 0; i < 100; i++) {
-        const snowflake = document.createElement('div');
-        const size = Math.random() * 10 + 5;
-        const duration = (Math.random() * 10 + 8).toFixed(2) + 's';
-        const delay = (Math.random() * 5).toFixed(2) + 's';
-        const opacity = (Math.random() * 0.6 + 0.4).toFixed(2);
-
-        Object.assign(snowflake.style, {
-            position: 'absolute',
-            top: `${Math.random() * -20}vh`,     /* start slightly above the viewport */
-            left: `${Math.random() * 100}%`,
-            fontSize: `${size}px`,
-            opacity: opacity,
-            transform: 'translateY(0) rotate(0deg)',
-            willChange: 'transform',
-            animation: `fall ${duration} linear ${delay} infinite`
+        const snowContainer = document.createElement('div');
+        Object.assign(snowContainer.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: '4',
+            overflow: 'hidden'
         });
+        document.body.appendChild(snowContainer);
 
-        snowflake.innerHTML = '❄️';
-        snowContainer.appendChild(snowflake);
-    }
+        for (let i = 0; i < 80; i++) {
+            const leaf = document.createElement('div');
+            const size = Math.random() * 14 + 8;
+            const duration = (Math.random() * 12 + 8).toFixed(2) + 's';
+            const delay = (Math.random() * 6).toFixed(2) + 's';
+            const opacity = (Math.random() * 0.5 + 0.5).toFixed(2);
 
-    const style = document.createElement('style');
-    style.innerHTML = `
-        @keyframes fall {
-            from { transform: translateY(0) rotate(0deg); }
-            to   { transform: translateY(110vh) rotate(360deg); }
+            Object.assign(leaf.style, {
+                position: 'absolute',
+                top: `${Math.random() * -20}vh`,
+                left: `${Math.random() * 100}%`,
+                fontSize: `${size}px`,
+                opacity: opacity,
+                transform: 'translateY(0) rotate(0deg)',
+                willChange: 'transform',
+                animation: `fall ${duration} linear ${delay} infinite`
+            });
+
+            leaf.innerHTML = '🍃';
+            snowContainer.appendChild(leaf);
         }
-    `;
-    document.head.appendChild(style);
-}
 
-
-
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fall {
+                0% { transform: translateY(0) translateX(0) rotate(0deg); }
+                50% { transform: translateY(55vh) translateX(6vw) rotate(120deg); }
+                100% { transform: translateY(110vh) translateX(-6vw) rotate(240deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         updateClock();
         setInterval(updateClock, 1000);
         fetchPittsburghWeather();
         createSnowfall();
-        setInterval(fetchPittsburghWeather, 600000); // every 10 minutes
+        setInterval(fetchPittsburghWeather, 600000);
     });
 </script>
 </body>
