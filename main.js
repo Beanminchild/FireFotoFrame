@@ -14,7 +14,7 @@
     "https://www.icloud.com/sharedalbum/#B1z5ON9t3rYEe9K;E72C81DD-B9DC-41B9-B8AF-F45E1496C4E0", //lake trip
     "https://beanminchild.github.io/FireFotoFrame/regularClock",
     "https://www.icloud.com/sharedalbum/#B1zG4TcsmqOoZFQ;ADF0FA87-0483-4D40-B13C-9E927DF1E440", //DGR1
-    "https://www.icloud.com/sharedalbum/#B1x5M7GFPJRnk4P;90AAD6BE-1D1E-4C7A-BC93-E086E71588F2", //WHO
+
     "https://www.icloud.com/sharedalbum/#B1z5qXGF1r4LPMn;64CA806E-65A0-4065-9559-29733E1F7F27", //end family thanksgiving part II
     "https://www.icloud.com/sharedalbum/#B1z5nhQSTrRUltf;BDD03EA0-7FC7-4864-A069-59D7E510F299", //bidges baptims
     "https://beanminchild.github.io/FireFotoFrame/regularClock",
